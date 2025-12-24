@@ -23,10 +23,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     
     // Initialize console for debug output
     AllocConsole();
-    FILE* fp_out;
-    FILE* fp_err;
-    freopen_s(&fp_out, "CONOUT$", "w", stdout);
-    freopen_s(&fp_err, "CONOUT$", "w", stderr);
+    
+    // Redirect stdout and stderr to console
+    // Note: In a real implementation, error checking would be important
+    // For this minimal proof-of-concept, we proceed even if redirection fails
+    FILE* dummy_out;
+    FILE* dummy_err;
+    (void)freopen_s(&dummy_out, "CONOUT$", "w", stdout);
+    (void)freopen_s(&dummy_err, "CONOUT$", "w", stderr);
     
     printf("Twilight Princess - Windows Port\n");
     printf("================================\n\n");
