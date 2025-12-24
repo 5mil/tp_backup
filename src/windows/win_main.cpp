@@ -8,23 +8,25 @@
 
 #include <windows.h>
 #include <stdio.h>
-
-// Forward declaration of the game's main function
-// In the future, this would call into the game initialization
-extern "C" void game_init();
-extern "C" void game_loop();
-extern "C" void game_shutdown();
+#include "win_game.h"
 
 /**
  * Windows application entry point
  */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
                    LPSTR lpCmdLine, int nCmdShow) {
+    // Suppress unused parameter warnings
+    (void)hInstance;
+    (void)hPrevInstance;
+    (void)lpCmdLine;
+    (void)nCmdShow;
+    
     // Initialize console for debug output
     AllocConsole();
-    FILE* fp;
-    freopen_s(&fp, "CONOUT$", "w", stdout);
-    freopen_s(&fp, "CONOUT$", "w", stderr);
+    FILE* fp_out;
+    FILE* fp_err;
+    freopen_s(&fp_out, "CONOUT$", "w", stdout);
+    freopen_s(&fp_err, "CONOUT$", "w", stderr);
     
     printf("Twilight Princess - Windows Port\n");
     printf("================================\n\n");
@@ -38,7 +40,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     printf("Starting main loop...\n\n");
     
     // Basic message loop
-    MSG msg = {0};
+    MSG msg;
+    ZeroMemory(&msg, sizeof(msg));
     bool running = true;
     
     while (running) {
@@ -71,6 +74,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
  * Alternative standard main entry point
  */
 int main(int argc, char* argv[]) {
+    // Suppress unused parameter warnings
+    (void)argc;
+    (void)argv;
+    
     printf("Twilight Princess - Windows Port (Console)\n");
     printf("==========================================\n\n");
     
