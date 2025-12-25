@@ -1,0 +1,91 @@
+# Makefile for Twilight Princess Windows Port
+# This provides a simple build system for cross-compiling to Windows
+
+# Compiler settings
+CXX ?= g++
+WINDRES ?= windres
+
+# Cross-compilation settings
+# For cross-compiling from Linux, use: make CROSS=x86_64-w64-mingw32-
+CROSS ?=
+ifneq ($(CROSS),)
+    CXX := $(CROSS)$(CXX)
+    WINDRES := $(CROSS)$(WINDRES)
+endif
+
+# Directories
+SRC_DIR := src/windows
+BUILD_DIR := build/windows
+BIN_DIR := $(BUILD_DIR)/bin
+
+# Flags
+CXXFLAGS := -std=c++17 -Wall -Wextra -O2
+LDFLAGS := -static-libgcc -static-libstdc++
+LIBS := -lkernel32 -luser32 -lgdi32
+
+# Target
+TARGET := $(BIN_DIR)/TwilightPrincess.exe
+
+# Source files
+SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
+
+# Default target
+.PHONY: all
+all: $(TARGET)
+
+# Create directories
+$(BUILD_DIR) $(BIN_DIR):
+	mkdir -p $@
+
+# Compile source files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	@echo "Compiling $<..."
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Link executable
+$(TARGET): $(OBJECTS) | $(BIN_DIR)
+	@echo "Linking $@..."
+	$(CXX) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo "Build complete: $@"
+
+# Clean build artifacts
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_DIR)
+
+# Run the executable (Windows only)
+.PHONY: run
+run: $(TARGET)
+	$(TARGET)
+
+# Cross-compilation examples
+.PHONY: windows-x64
+windows-x64:
+	$(MAKE) -f Makefile.windows CROSS=x86_64-w64-mingw32-
+
+.PHONY: windows-x86
+windows-x86:
+	$(MAKE) -f Makefile.windows CROSS=i686-w64-mingw32-
+
+# Help
+.PHONY: help
+help:
+	@echo "Twilight Princess Windows Port - Makefile"
+	@echo ""
+	@echo "Targets:"
+	@echo "  all              - Build the Windows executable"
+	@echo "  clean            - Remove build artifacts"
+	@echo "  run              - Run the executable (Windows only)"
+	@echo "  windows-x64      - Cross-compile for Windows x64 (requires MinGW-w64)"
+	@echo "  windows-x86      - Cross-compile for Windows x86 (requires MinGW-w64)"
+	@echo "  help             - Show this help message"
+	@echo ""
+	@echo "Variables:"
+	@echo "  CXX=<compiler>   - Set C++ compiler (default: g++)"
+	@echo "  CROSS=<prefix>   - Set cross-compiler prefix (e.g., x86_64-w64-mingw32-)"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make                                    # Build on Windows"
+	@echo "  make CROSS=x86_64-w64-mingw32-         # Cross-compile from Linux"
+	@echo "  make windows-x64                        # Cross-compile for x64"

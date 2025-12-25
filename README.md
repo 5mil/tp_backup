@@ -27,6 +27,9 @@ The code for the GameCube releases is completely matching. However, not every Tr
 >
 > This project itself **is not**, and will not, produce a port, to PC or any other platform. It is a decompilation of the original game code, which can be compiled back into a binary identical to the original.
 
+> [!NOTE]
+> **Experimental Windows Port**: An experimental Windows port is available that cross-compiles the game code to a Windows executable. This is a separate effort from the main decompilation and not intended for matching. See [`docs/WINDOWS_QUICKSTART.md`](docs/WINDOWS_QUICKSTART.md) for details.
+
 <!-- markdownlint-disable MD033 -->
 [<img src="https://decomp.dev/zeldaret/tp.svg?w=512&h=256" width="512" height="256" alt="A visual">][Progress]
 <!-- markdownlint-enable MD033 -->

@@ -1,0 +1,72 @@
+name: Windows Port Build
+
+on:
+  push:
+    branches: [ main, copilot/port-game-to-windows ]
+    paths:
+      - 'src/windows/**'
+      - 'CMakeLists.txt'
+      - 'Makefile.windows'
+      - '.github/workflows/windows-port.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/windows/**'
+      - 'CMakeLists.txt'
+      - 'Makefile.windows'
+      - '.github/workflows/windows-port.yml'
+  workflow_dispatch:
+
+jobs:
+  build-windows-port:
+    name: Build Windows Port
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install MinGW-w64
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mingw-w64
+        
+    - name: Verify tools
+      run: |
+        x86_64-w64-mingw32-g++ --version
+        cmake --version
+        make --version
+        
+    - name: Build with Make
+      run: |
+        make -f Makefile.windows CROSS=x86_64-w64-mingw32-
+        
+    - name: Build with CMake
+      run: |
+        cmake -B build/cmake-windows -S . \
+          -DCMAKE_SYSTEM_NAME=Windows \
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++
+        cmake --build build/cmake-windows
+        
+    - name: Verify executables
+      run: |
+        ls -lh build/windows/bin/TwilightPrincess.exe
+        ls -lh build/cmake-windows/bin/TwilightPrincess.exe
+        file build/windows/bin/TwilightPrincess.exe
+        file build/cmake-windows/bin/TwilightPrincess.exe
+        
+    - name: Upload Make build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: TwilightPrincess-Windows-Make
+        path: build/windows/bin/TwilightPrincess.exe
+        
+    - name: Upload CMake build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: TwilightPrincess-Windows-CMake
+        path: build/cmake-windows/bin/TwilightPrincess.exe
